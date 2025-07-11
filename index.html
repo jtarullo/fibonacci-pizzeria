@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍕 Da Vinci's Fibonacci Pizzeria 🍕</title>
+    <!-- MUSIC PLAYER TEMPORARILY DISABLED - Can be re-enabled by uncommenting the music-related sections -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: linear-gradient(135deg, #8b4513 0%, #d2691e 20%, #f4a460 40%, #daa520 60%, #cd853f 80%, #8b4513 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(218, 165, 32, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 60% 40%, rgba(244, 164, 96, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f5f5dc 0%, #faebd7 50%, #f0e68c 100%);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 
+                0 0 30px rgba(139, 69, 19, 0.3),
+                inset 0 0 20px rgba(218, 165, 32, 0.1);
+            backdrop-filter: blur(5px);
+            border: 3px solid #8b4513;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* MUSIC PLAYER STYLES - COMMENTED OUT FOR NOW */
+        /*
+        .music-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 50%, #8b4513 100%);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 
+                0 5px 20px rgba(139, 69, 19, 0.4),
+                inset 0 1px 3px rgba(218, 165, 32, 0.2);
+            border: 2px solid #daa520;
+            z-index: 1000;
+            min-width: 220px;
+        }
+        
+        .music-controls h4 {
+            color: #f5f5dc;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .music-button {
+            background: linear-gradient(145deg, #daa520, #b8860b);
+            color: #8b4513;
+            border: 2px solid #8b4513;
+            padding: 8px 15px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 3px 10px rgba(139, 69, 19, 0.3),
+                inset 0 1px 3px rgba(255, 255, 255, 0.3);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+        
+        .music-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 
+                0 5px 15px rgba(139, 69, 19, 0.4),
+                inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            background: linear-gradient(145deg, #f0e68c, #daa520);
+        }
+        
+        .music-button:active {
+            transform: translateY(0);
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .volume-control label {
+            color: #f5f5dc;
+            font-family: 'Cinzel', serif;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .volume-slider {
+            flex: 1;
+            height: 6px;
+            background: #f5f5dc;
+            border-radius: 3px;
+            outline: none;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+        
+        .volume-slider:hover {
+            opacity: 1;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #daa520;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(139, 69, 19, 0.3);
+        }
+        
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #daa520;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 5px rgba(139, 69, 19, 0.3);
+        }
+        
+        .music-status {
+            text-align: center;
+            margin-top: 10px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 0.9em;
+            color: #f5f5dc;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .music-playing {
+            animation: musicPulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes musicPulse {
+            0%, 100% { 
+                box-shadow: 0 5px 20px rgba(139, 69, 19, 0.4),
+                           inset 0 1px 3px rgba(218, 165, 32, 0.2);
+            }
+            50% { 
+                box-shadow: 0 8px 30px rgba(218, 165, 32, 0.6),
+                           inset 0 1px 3px rgba(218, 165, 32, 0.4);
+            }
+        }
+        */
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid #daa520;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        
+        h1 {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 2.8em;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #8b4513;
+            text-shadow: 
+                2px 2px 4px rgba(139, 69, 19, 0.3),
+                0 0 10px rgba(218, 165, 32, 0.2);
+            letter-spacing: 2px;
+            position: relative;
+        }
+        
+        h1::after {
+            content: '🍕';
+            position: absolute;
+            font-size: 0.4em;
+            animation: spin 4s linear infinite;
+            left: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        h1::before {
+            content: '🍕';
+            position: absolute;
+            font-size: 0.4em;
+            animation: spin 4s linear infinite reverse;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        @keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+        
+        .interactive {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 50%, #8b4513 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 
+                0 10px 30px rgba(139, 69, 19, 0.4),
+                inset 0 2px 10px rgba(218, 165, 32, 0.2);
+            text-align: center;
+            border: 2px solid #daa520;
+            position: relative;
+        }
+        
+        .interactive::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px solid #cd853f;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        
+        .interactive h3 {
+            color: #f5f5dc;
+            font-family: 'Cinzel', serif;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            text-shadow: 
+                2px 2px 4px rgba(0, 0, 0, 0.5),
+                0 0 15px rgba(218, 165, 32, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .input-group {
+            margin: 20px 0;
+        }
+        
+        .interactive input {
+            background: #f5f5dc;
+            border: 2px solid #8b4513;
+            padding: 15px 20px;
+            margin: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 3px 10px rgba(139, 69, 19, 0.3),
+                inset 0 1px 3px rgba(218, 165, 32, 0.2);
+            font-family: 'Cormorant Garamond', serif;
+        }
+        
+        .interactive input:focus {
+            outline: none;
+            transform: scale(1.02);
+            border-color: #daa520;
+            box-shadow: 
+                0 0 20px rgba(218, 165, 32, 0.5),
+                inset 0 1px 3px rgba(218, 165, 32, 0.3);
+        }
+        
+        .interactive button {
+            background: linear-gradient(145deg, #daa520, #b8860b);
+            color: #8b4513;
+            border: 2px solid #8b4513;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 5px 15px rgba(139, 69, 19, 0.3),
+                inset 0 1px 3px rgba(255, 255, 255, 0.3);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+        }
+        
+        .interactive button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 8px 25px rgba(139, 69, 19, 0.4),
+                inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            background: linear-gradient(145deg, #f0e68c, #daa520);
+        }
+        
+        .interactive button:active {
+            transform: translateY(0);
+        }
+        
+        .output {
+            background: linear-gradient(135deg, #faebd7 0%, #f5f5dc 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #8b4513;
+            white-space: pre-wrap;
+            font-size: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Cormorant Garamond', serif;
+            box-shadow: 
+                inset 0 2px 10px rgba(139, 69, 19, 0.2),
+                0 3px 10px rgba(139, 69, 19, 0.3);
+            color: #8b4513;
+            font-weight: 500;
+        }
+        
+        .meme-container {
+            text-align: center;
+            margin: 30px 0;
+            padding: 25px;
+            background: linear-gradient(135deg, #f0e68c 0%, #faebd7 50%, #f5f5dc 100%);
+            border-radius: 15px;
+            box-shadow: 
+                0 10px 30px rgba(139, 69, 19, 0.3),
+                inset 0 2px 10px rgba(218, 165, 32, 0.2);
+            border: 3px solid #8b4513;
+            position: relative;
+        }
+        
+        .meme-container::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 1px solid #daa520;
+            border-radius: 10px;
+            pointer-events: none;
+        }
+        
+        .meme-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: 10px;
+            box-shadow: 
+                0 10px 30px rgba(139, 69, 19, 0.4),
+                inset 0 2px 5px rgba(218, 165, 32, 0.1);
+            transition: transform 0.3s ease;
+            border: 2px solid #8b4513;
+        }
+        
+        .meme-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .meme-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.6em;
+            margin: 20px 0;
+            color: #8b4513;
+            text-shadow: 
+                2px 2px 4px rgba(139, 69, 19, 0.2),
+                0 0 10px rgba(218, 165, 32, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        .sequence-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .fib-number {
+            background: linear-gradient(145deg, #daa520, #b8860b);
+            color: #8b4513;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #8b4513;
+            box-shadow: 
+                0 3px 10px rgba(139, 69, 19, 0.3),
+                inset 0 1px 3px rgba(255, 255, 255, 0.3);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 1px;
+        }
+        
+        .fib-number:hover {
+            transform: scale(1.05);
+            box-shadow: 
+                0 5px 15px rgba(139, 69, 19, 0.4),
+                inset 0 1px 3px rgba(255, 255, 255, 0.4);
+            background: linear-gradient(145deg, #f0e68c, #daa520);
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-8px); }
+            60% { transform: translateY(-4px); }
+        }
+        
+        .sparkle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #daa520;
+            border-radius: 50%;
+            animation: sparkle 2s infinite;
+            border: 1px solid #8b4513;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+            50% { opacity: 1; transform: scale(1) rotate(180deg); }
+        }
+        
+
+    </style>
+</head>
+<body>
+    <!-- MUSIC PLAYER - COMMENTED OUT FOR NOW -->
+    <!--
+    <div class="music-controls">
+        <h4>🎵 Pizzeria Ambiance</h4>
+        <div style="text-align: center;">
+            <button class="music-button" id="playPauseBtn" onclick="toggleMusic()">🎵 Play</button>
+            <button class="music-button" onclick="changeTrack()">🔄 Next</button>
+            <button class="music-button" onclick="showMusicInstructions()" style="font-size: 12px; padding: 6px 12px;">📋 Help</button>
+        </div>
+        <div class="volume-control">
+            <label>🔊</label>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="30" onchange="setVolume(this.value)">
+        </div>
+        <div class="music-status" id="musicStatus">🎶 Add music files to ./music/ folder</div>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="./music/italian-restaurant.mp3" type="audio/mpeg">
+        <source src="./music/italian-restaurant.ogg" type="audio/ogg">
+        <source src="./music/tarantella.mp3" type="audio/mpeg">
+        <source src="./music/pizzeria-ambiance.mp3" type="audio/mpeg">
+        <source src="data:audio/wav;base64,UklGRp4EAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YXoEAAA=" type="audio/wav">
+    </audio>
+    -->
+
+    <div class="container">
+        <h1>Da Vinci's Fibonacci Pizzeria</h1>
+        
+        <div class="interactive">
+            <h3>🍕 Enter a Number & Discover the Divine Pizza Proportions! 🍕</h3>
+            <div class="input-group">
+                <input type="number" id="fibInput" placeholder="Enter a number (0+)" min="0" value="10">
+            </div>
+            <button onclick="calculateFibonacci()">🧮 Calculate</button>
+            <button onclick="generateSequence()">🌟 Generate Sequence</button>
+            <button onclick="checkIsFibonacci()">🔍 Check if Fibonacci</button>
+            <button onclick="showRandomMeme()">🎲 Random Pizza</button>
+            <div id="interactiveOutput" class="output"></div>
+        </div>
+        
+        <div id="memeContainer" class="meme-container" style="display: none;">
+            <div class="meme-title" id="memeTitle"></div>
+            <img id="memeImage" class="meme-image" alt="Pizza Fibonacci Meme">
+            <div id="memeCaption" style="margin-top: 15px; font-size: 1.2em; color: #8b4513; font-family: 'Cormorant Garamond', serif; font-weight: 500;"></div>
+        </div>
+    </div>
+
+    <script>
+        // 🍕 Da Vinci's Fibonacci Pizzeria JavaScript 🍕
+
+        // Pizza meme database for Fibonacci numbers - All unique working images!
+        const fibonacciMemes = {
+            0: {
+                image: "https://i.imgflip.com/1bij.jpg",
+                title: "Zero Slices - The Tragedy Begins",
+                caption: "When you have 0 pizza slices and realize you need to start your Fibonacci journey from nothing"
+            },
+            1: {
+                image: "https://i.imgflip.com/23ls.jpg",
+                title: "One Slice - The Beginning",
+                caption: "That lonely first slice of pizza... but wait, there's another 1 coming!"
+            },
+            2: {
+                image: "https://i.imgflip.com/1ur9b0.jpg",
+                title: "Two Slices - Perfect Pair",
+                caption: "When 1 + 1 = 2 pizza slices and you're finally getting somewhere in life"
+            },
+            3: {
+                image: "https://i.imgflip.com/26am.jpg",
+                title: "Three Slices - The Magic Number",
+                caption: "Leonardo knew: 1 + 2 = 3! The divine proportion of pizza satisfaction begins"
+            },
+            5: {
+                image: "https://i.imgflip.com/1o00in.jpg",
+                title: "Five Slices - High Five!",
+                caption: "2 + 3 = 5 slices! Now we're talking serious pizza mathematics"
+            },
+            8: {
+                image: "https://i.imgflip.com/4t0m5.jpg",
+                title: "Eight Slices - Full Circle",
+                caption: "3 + 5 = 8! That's a whole pizza! The golden ratio of pizza perfection"
+            },
+            13: {
+                image: "https://i.imgflip.com/1wz1x.jpg",
+                title: "Thirteen Slices - Lucky Pizza",
+                caption: "5 + 8 = 13! Unlucky for some, but your pizza game is getting strong"
+            },
+            21: {
+                image: "https://i.imgflip.com/1bhf.jpg",
+                title: "Twenty-One Slices - Legal Pizza",
+                caption: "8 + 13 = 21! Old enough to responsibly consume this many pizza slices"
+            },
+            34: {
+                image: "https://i.imgflip.com/1ihzfe.jpg",
+                title: "Thirty-Four Slices - The Golden Ratio",
+                caption: "13 + 21 = 34! Leonardo's pizza proportions are becoming divine"
+            },
+            55: {
+                image: "https://i.imgflip.com/2hgfw.jpg",
+                title: "Fifty-Five Slices - Speed Limit Pizza",
+                caption: "21 + 34 = 55! Don't eat this fast, but appreciate the mathematical beauty"
+            },
+            89: {
+                image: "https://i.imgflip.com/1c1uej.jpg",
+                title: "Eighty-Nine Slices - Almost a Century",
+                caption: "34 + 55 = 89! So close to 100 slices, yet so perfectly Fibonacci-licious"
+            },
+            144: {
+                image: "https://i.imgflip.com/1e7ql7.jpg",
+                title: "One Hundred Forty-Four Slices - Dozen Squared",
+                caption: "55 + 89 = 144! That's 12² slices - Leonardo would be proud!"
+            },
+            233: {
+                image: "https://i.imgflip.com/1tl71a.jpg",
+                title: "Two Hundred Thirty-Three Slices - Prime Pizza",
+                caption: "89 + 144 = 233! A prime number AND a Fibonacci number? This pizza is special!"
+            },
+            377: {
+                image: "https://i.imgflip.com/1yxkcp.jpg",
+                title: "Three Hundred Seventy-Seven Slices - Triple Lucky",
+                caption: "144 + 233 = 377! Three 7s in your pizza count - that's some serious luck!"
+            },
+            610: {
+                image: "https://i.imgflip.com/1nck6k.jpg",
+                title: "Six Hundred Ten Slices - Big League Pizza",
+                caption: "233 + 377 = 610! You're now in the professional pizza eating league!"
+            },
+            987: {
+                image: "https://i.imgflip.com/1h7in3.jpg",
+                title: "Nine Hundred Eighty-Seven Slices - Almost a Thousand",
+                caption: "377 + 610 = 987! So close to 1000, but uniquely Fibonacci-pizza perfect"
+            },
+            1597: {
+                image: "https://i.imgflip.com/1otk96.jpg",
+                title: "One Thousand Five Hundred Ninety-Seven Slices - The Millennium Plus",
+                caption: "610 + 987 = 1597! Welcome to the four-digit pizza dimension!"
+            },
+            2584: {
+                image: "https://i.imgflip.com/1bij.jpg",
+                title: "Two Thousand Five Hundred Eighty-Four Slices - The Big Boy",
+                caption: "987 + 1597 = 2584! Your pizza calculator is working overtime!"
+            },
+            4181: {
+                image: "https://i.imgflip.com/23ls.jpg",
+                title: "Four Thousand One Hundred Eighty-One Slices - Mind = Blown",
+                caption: "1597 + 2584 = 4181! Even Leonardo couldn't have imagined this many pizza slices!"
+            },
+            6765: {
+                image: "https://i.imgflip.com/1ur9b0.jpg",
+                title: "Six Thousand Seven Hundred Sixty-Five Slices - The Monster Pizza",
+                caption: "2584 + 4181 = 6765! This pizza situation is getting out of hand!"
+            },
+            10946: {
+                image: "https://i.imgflip.com/26am.jpg",
+                title: "Ten Thousand Nine Hundred Forty-Six Slices - Five Digits of Glory",
+                caption: "4181 + 6765 = 10946! Welcome to the 5-digit pizza dimension!"
+            },
+            default: {
+                image: "https://i.imgflip.com/1o00in.jpg",
+                title: "🍕 MASSIVE Pizza Number Detected! 🍕",
+                caption: "This number is so big, it broke our pizza database! But it's still beautifully Fibonacci-licious!"
+            }
+        };
+
+        // 1. Recursive approach (simple but inefficient for large numbers)
+        function fibonacciRecursive(n) {
+            if (n <= 1) return n;
+            return fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2);
+        }
+
+        // 2. Iterative approach (efficient)
+        function fibonacciIterative(n) {
+            if (n <= 1) return n;
+            
+            let a = 0, b = 1;
+            for (let i = 2; i <= n; i++) {
+                let temp = a + b;
+                a = b;
+                b = temp;
+            }
+            return b;
+        }
+
+        // 3. Memoized recursive approach (efficient)
+        function fibonacciMemoized(n, memo = {}) {
+            if (n in memo) return memo[n];
+            if (n <= 1) return n;
+            
+            memo[n] = fibonacciMemoized(n - 1, memo) + fibonacciMemoized(n - 2, memo);
+            return memo[n];
+        }
+
+        // 4. Generate Fibonacci sequence up to n terms
+        function fibonacciSequence(n) {
+            if (n <= 0) return [];
+            if (n === 1) return [0];
+            if (n === 2) return [0, 1];
+            
+            const sequence = [0, 1];
+            for (let i = 2; i < n; i++) {
+                sequence.push(sequence[i - 1] + sequence[i - 2]);
+            }
+            return sequence;
+        }
+
+        // 5. Check if a number is a Fibonacci number
+        function isFibonacci(num) {
+            if (num < 0) return false;
+            
+            let a = 0, b = 1;
+            if (num === a || num === b) return true;
+            
+            while (b < num) {
+                let temp = a + b;
+                a = b;
+                b = temp;
+            }
+            return b === num;
+        }
+
+        // 6. Show meme for a Fibonacci number
+        function showMeme(fibNumber) {
+            const meme = fibonacciMemes[fibNumber] || fibonacciMemes.default;
+            const container = document.getElementById('memeContainer');
+            const title = document.getElementById('memeTitle');
+            const image = document.getElementById('memeImage');
+            const caption = document.getElementById('memeCaption');
+            
+            title.textContent = meme.title;
+            image.src = meme.image;
+            caption.textContent = meme.caption;
+            
+            container.style.display = 'block';
+            container.scrollIntoView({ behavior: 'smooth' });
+            
+            // Add sparkle effect
+            createSparkles(container);
+        }
+
+        // 7. Create sparkle animation
+        function createSparkles(container) {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * container.offsetWidth + 'px';
+                    sparkle.style.top = Math.random() * container.offsetHeight + 'px';
+                    container.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 2000);
+                }, i * 200);
+            }
+        }
+
+        // Interactive functions
+        function calculateFibonacci() {
+            const n = parseInt(document.getElementById('fibInput').value);
+            const output = document.getElementById('interactiveOutput');
+            
+            if (isNaN(n) || n < 0) {
+                output.innerHTML = '<span style="color: #ff6b6b;">🚫 Please enter a non-negative number!</span>';
+                return;
+            }
+            
+            let result = `🍕 Pizza Fibonacci(${n}) Results:\n\n`;
+            
+            if (n <= 20) {
+                const recursiveStart = performance.now();
+                const recursiveResult = fibonacciRecursive(n);
+                const recursiveTime = performance.now() - recursiveStart;
+                result += `🐌 Recursive Method: ${recursiveResult} pizza slices (${recursiveTime.toFixed(4)}ms)\n`;
+            } else {
+                result += `🐌 Recursive Method: Skipped (too slow for n > 20)\n`;
+            }
+            
+            const iterativeStart = performance.now();
+            const iterativeResult = fibonacciIterative(n);
+            const iterativeTime = performance.now() - iterativeStart;
+            result += `🚀 Iterative Method: ${iterativeResult} pizza slices (${iterativeTime.toFixed(4)}ms)\n`;
+            
+            const memoizedStart = performance.now();
+            const memoizedResult = fibonacciMemoized(n);
+            const memoizedTime = performance.now() - memoizedStart;
+            result += `🧠 Memoized Method: ${memoizedResult} pizza slices (${memoizedTime.toFixed(4)}ms)\n`;
+            
+            result += `\n🎯 The ${n}th Fibonacci number is: ${iterativeResult} pizza slices`;
+            
+            output.textContent = result;
+            
+            // Show meme for the result if it's a Fibonacci number
+            if (isFibonacci(iterativeResult)) {
+                setTimeout(() => showMeme(iterativeResult), 1000);
+            }
+        }
+
+        function generateSequence() {
+            const n = parseInt(document.getElementById('fibInput').value);
+            const output = document.getElementById('interactiveOutput');
+            
+            if (isNaN(n) || n < 0) {
+                output.innerHTML = '<span style="color: #ff6b6b;">🚫 Please enter a non-negative number!</span>';
+                return;
+            }
+            
+            if (n > 50) {
+                output.innerHTML = '<span style="color: #ff6b6b;">⚠️ That\'s a lot of numbers! Try something smaller than 50.</span>';
+                return;
+            }
+            
+            const sequence = fibonacciSequence(n);
+            
+            // Create visual sequence display
+            output.innerHTML = `<div style="text-align: center; margin-bottom: 20px; font-weight: bold; color: #8b4513;">
+                🍕 First ${n} Fibonacci Pizza Slices: 🍕
+            </div>`;
+            
+            const sequenceDisplay = document.createElement('div');
+            sequenceDisplay.className = 'sequence-display';
+            
+            sequence.forEach((num, index) => {
+                const numElement = document.createElement('div');
+                numElement.className = 'fib-number';
+                numElement.textContent = num;
+                numElement.style.animationDelay = `${index * 0.1}s`;
+                numElement.onclick = () => showMeme(num);
+                sequenceDisplay.appendChild(numElement);
+            });
+            
+            output.appendChild(sequenceDisplay);
+        }
+
+        function checkIsFibonacci() {
+            const n = parseInt(document.getElementById('fibInput').value);
+            const output = document.getElementById('interactiveOutput');
+            
+            if (isNaN(n) || n < 0) {
+                output.innerHTML = '<span style="color: #ff6b6b;">🚫 Please enter a non-negative number!</span>';
+                return;
+            }
+            
+            const result = isFibonacci(n);
+            const emoji = result ? '🍕' : '❌';
+            const message = result ? 'YES! Perfect Pizza Number! 🎉' : 'Nope! Not a Pizza Fibonacci! 😢';
+            const color = result ? '#daa520' : '#8b4513';
+            
+            output.innerHTML = `
+                <div style="text-align: center; font-size: 1.5em; color: ${color}; font-weight: bold;">
+                    ${emoji} Is ${n} a Fibonacci pizza number?<br>
+                    <span style="font-size: 2em;">${message}</span>
+                </div>
+            `;
+            
+            if (result) {
+                setTimeout(() => showMeme(n), 1000);
+            }
+        }
+
+        function showRandomMeme() {
+            const fibNumbers = Object.keys(fibonacciMemes).filter(key => key !== 'default');
+            const randomFib = fibNumbers[Math.floor(Math.random() * fibNumbers.length)];
+            const output = document.getElementById('interactiveOutput');
+            
+            output.innerHTML = `
+                <div style="text-align: center; font-size: 1.5em; color: #8b4513; font-weight: bold;">
+                    🎲 Random Fibonacci Pizza Number: ${randomFib}
+                </div>
+            `;
+            
+            setTimeout(() => showMeme(parseInt(randomFib)), 500);
+        }
+
+        // MUSIC FUNCTIONALITY - COMMENTED OUT FOR NOW
+        /*
+        let currentTrack = 0;
+        let isPlaying = false;
+        
+        const musicTracks = [
+            {
+                name: "Tarantella Napoletana",
+                url: "./music/tarantella.mp3"
+            },
+            {
+                name: "Italian Restaurant Ambiance",
+                url: "./music/italian-restaurant.mp3"
+            },
+            {
+                name: "Acoustic Italian Folk",
+                url: "./music/italian-folk.mp3"
+            },
+            {
+                name: "Pizzeria Atmosphere",
+                url: "./music/pizzeria-ambiance.mp3"
+            },
+            {
+                name: "Renaissance Lute Music",
+                url: "./music/renaissance-lute.mp3"
+            },
+            {
+                name: "Classical Italian",
+                url: "./music/classical-italian.mp3"
+            }
+        ];
+
+        function toggleMusic() {
+            const audio = document.getElementById('backgroundMusic');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const status = document.getElementById('musicStatus');
+            const musicControls = document.querySelector('.music-controls');
+            
+            if (isPlaying) {
+                audio.pause();
+                playPauseBtn.textContent = '🎵 Play';
+                status.textContent = '🎶 Music Paused';
+                musicControls.classList.remove('music-playing');
+                isPlaying = false;
+            } else {
+                const volume = document.getElementById('volumeSlider').value / 100;
+                audio.volume = volume;
+                audio.src = musicTracks[currentTrack].url;
+                
+                audio.play().then(() => {
+                    playPauseBtn.textContent = '⏸️ Pause';
+                    status.textContent = `🎵 Now Playing: ${musicTracks[currentTrack].name}`;
+                    musicControls.classList.add('music-playing');
+                    isPlaying = true;
+                }).catch(error => {
+                    console.log("Audio play failed:", error);
+                    status.innerHTML = `🚫 Audio file not found!<br><small>Add music files to ./music/ folder</small>`;
+                    musicControls.classList.remove('music-playing');
+                    setTimeout(() => {
+                        showMusicInstructions();
+                    }, 2000);
+                });
+            }
+        }
+
+        function changeTrack() {
+            const audio = document.getElementById('backgroundMusic');
+            const status = document.getElementById('musicStatus');
+            
+            currentTrack = (currentTrack + 1) % musicTracks.length;
+            audio.src = musicTracks[currentTrack].url;
+            status.textContent = `🔄 Switched to: ${musicTracks[currentTrack].name}`;
+            
+            if (isPlaying) {
+                audio.play().then(() => {
+                    status.textContent = `🎵 Now Playing: ${musicTracks[currentTrack].name}`;
+                }).catch(error => {
+                    console.log("Audio play failed:", error);
+                    status.innerHTML = `🚫 Track not found!<br><small>Add ${musicTracks[currentTrack].name.toLowerCase().replace(/\s+/g, '-')}.mp3 to ./music/</small>`;
+                    
+                    setTimeout(() => {
+                        if (currentTrack < musicTracks.length - 1) {
+                            changeTrack();
+                        } else {
+                            isPlaying = false;
+                            document.getElementById('playPauseBtn').textContent = '🎵 Play';
+                            document.querySelector('.music-controls').classList.remove('music-playing');
+                            showMusicInstructions();
+                        }
+                    }, 2000);
+                });
+            }
+        }
+
+        function setVolume(volume) {
+            const audio = document.getElementById('backgroundMusic');
+            audio.volume = volume / 100;
+            
+            const status = document.getElementById('musicStatus');
+            if (isPlaying) {
+                status.textContent = `🎵 Now Playing: ${musicTracks[currentTrack].name} (Volume: ${volume}%)`;
+            } else {
+                status.textContent = `🔊 Volume set to ${volume}%`;
+            }
+        }
+        
+        function showMusicInstructions() {
+            const output = document.getElementById('interactiveOutput');
+            output.innerHTML = `
+                <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f5f5dc, #faebd7); border-radius: 10px; border: 2px solid #daa520;">
+                    <h3 style="color: #8b4513; margin-bottom: 15px;">🎵 Add Your Own Italian Music! 🎵</h3>
+                    <div style="text-align: left; margin: 15px 0; color: #8b4513;">
+                        <strong>Step 1:</strong> Create a folder called "music" in the same directory as this HTML file<br>
+                        <strong>Step 2:</strong> Add your Italian music files (.mp3 or .ogg format)<br>
+                        <strong>Step 3:</strong> Name them: tarantella.mp3, italian-restaurant.mp3, etc.<br>
+                        <strong>Step 4:</strong> Refresh this page and click Play!
+                    </div>
+                    <div style="margin-top: 15px; padding: 10px; background: #f0e68c; border-radius: 5px; font-size: 0.9em;">
+                        💡 <strong>Tip:</strong> You can find royalty-free Italian music at:<br>
+                        • freemusicarchive.org<br>
+                        • incompetech.com<br>
+                        • zapsplat.com (with free account)
+                    </div>
+                </div>
+            `;
+        }
+        */
+
+        // Page initialization
+        window.onload = function() {
+            /* MUSIC INITIALIZATION - COMMENTED OUT FOR NOW
+            const audio = document.getElementById('backgroundMusic');
+            const volumeSlider = document.getElementById('volumeSlider');
+            
+            audio.volume = volumeSlider.value / 100;
+            
+            audio.addEventListener('ended', () => {
+                if (isPlaying) {
+                    changeTrack();
+                }
+            });
+            
+            audio.addEventListener('error', (e) => {
+                console.log("Audio error:", e);
+                document.getElementById('musicStatus').textContent = '🚫 Audio track unavailable';
+            });
+            */
+            
+            // Show a welcome message after a short delay
+            setTimeout(() => {
+                const welcomeOutput = document.getElementById('interactiveOutput');
+                welcomeOutput.innerHTML = `
+                    <div style="text-align: center; font-size: 1.5em; color: #8b4513; font-weight: bold;">
+                        🍕 Welcome to Da Vinci's Fibonacci Pizzeria! 🍕<br>
+                        <span style="font-size: 1em; margin-top: 10px; display: block; font-family: 'Cormorant Garamond', serif;">
+                            "The divine proportion reveals itself in the art of pizza mathematics"<br>
+                            - Leonardo Da Vinci (probably)
+                        </span>
+                    </div>
+                `;
+            }, 1000);
+        };
+    </script>
+</body>
+</html> 
